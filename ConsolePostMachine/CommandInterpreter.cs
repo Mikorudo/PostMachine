@@ -29,16 +29,15 @@ namespace ConsolePostMachine
 			List<Command> commands = new List<Command>();
 			for (int i = 0; i < textCommands.Count; i++)
 			{
-				string[] line = textCommands[i].Split();
+				string[] arguments = textCommands[i].Split();
 				int lineNum;
-				if (!int.TryParse(line[0], out lineNum))
-					throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: номер команды " + line[0] + " не число");
+				if (!int.TryParse(arguments[0], out lineNum))
+					throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: номер команды " + arguments[0] + " не число");
 				if (lineNum != i + 1)
-					throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: номер команды " + line[0] + " нарушает порядок команд");
+					throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: номер команды " + arguments[0] + " нарушает порядок команд");
 				CommandType commandType;
-				switch (line[1])
+				switch (arguments[1])
 				{
-
 					case ">":
 						commandType = CommandType.right;
 						break;
@@ -58,9 +57,9 @@ namespace ConsolePostMachine
 						commandType = CommandType.stop;
 						break;
 					default:
-						throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: команда " + line[1] + " не является предусмотренной командой");
+						throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: команда " + arguments[1] + " не является предусмотренной командой");
 				}
-				int nextLine1, nextLine2;
+				int nextLine1 = -1, nextLine2 = -1;
 				switch (commandType)
 				{
 					case CommandType.left:
@@ -68,42 +67,94 @@ namespace ConsolePostMachine
 					case CommandType.point:
 					case CommandType.erase:
 						{
-							if (line.Length == 2)
-								nextLine1 = i + 2;
-							else if (line.Length == 3)
+							if (arguments.Length == 2)
+								if (i == textCommands.Count - 1)
+									nextLine1 = 0;
+								else
+									nextLine1 = i + 2;
+							else if (arguments.Length == 3)
 							{
-								if (!int.TryParse(line[2], out nextLine1))
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " не число");
+								if (!int.TryParse(arguments[2], out nextLine1))
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + arguments[2] + " не число");
 								if (nextLine1 == i + 1)
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " ссылается на эту же команду");
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + arguments[2] + " ссылается на эту же команду");
 								if (nextLine1 > textCommands.Count)
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " ссылается на несуществующую команду");
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + arguments[2] + " ссылается на несуществующую команду");
 							}
 							else
-								throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: лишний аргумент " + line[3]);
+								throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: лишний аргумент " + arguments[3]);
 							break;
 						}
 					case CommandType.ifelse:
 						{
-							if (line.Length == 4)
+							if (arguments.Length == 4)
 							{
-								if (!int.TryParse(line[2], out nextLine1))
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " не число");
+								if (!int.TryParse(arguments[2], out nextLine1))
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[2] + " не число");
+								if (!int.TryParse(arguments[3], out nextLine2))
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[3] + " не число");
 								if (nextLine1 == i + 1)
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " ссылается на эту же команду");
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[2] + " ссылается на эту же строку");
+								if (nextLine2 == i + 1)
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[3] + " ссылается на эту же строку");
 								if (nextLine1 > textCommands.Count)
-									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей команде " + line[2] + " ссылается на несуществующую команду");
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[2] + " ссылается на несуществующую строку");
+								if (nextLine2 > textCommands.Count)
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[3] + " ссылается на несуществующую строку");
 							}
-							else if (line.Length)
-								throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: лишний аргумент " + line[3]);
+							else if (arguments.Length < 4)
+								throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: недостаточно аргументов");
+							else
+								throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: лишний аргумент " + arguments[4]);
+
 							break;
 						}
 					case CommandType.stop:
+						{
+							if (arguments.Length == 2)
+								break;
+							if (arguments.Length > 2)
+							{
+								if (arguments[2] == "0")
+								{
+									if (arguments.Length == 3)
+										break;
+									else
+										throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: лишний аргумент " + arguments[3]);
+								}
+								else
+									throw new Exception("Строка (" + textCommands[i] + ") содержит ошибку: переход к следующей строке " + arguments[3] + " ссылается на строку отличную от 0");
+							}
+							break;
+						} 
+					default:
+						throw new Exception("Получен непредусмотренный CommandType");
+				}
+				switch (commandType)
+				{
+					case CommandType.left:
+						commands.Add(new MoveLeftCmd(nextLine1));
+						break;
+					case CommandType.right:
+						commands.Add(new MoveRightCmd(nextLine1));
+						break;
+					case CommandType.point:
+						commands.Add(new PointCellCmd(nextLine1));
+						break;
+					case CommandType.erase:
+						commands.Add(new EraseCellCmd(nextLine1));
+						break;
+					case CommandType.ifelse:
+						commands.Add(new IfElseCmd(nextLine1, nextLine2));
+						break;
+					case CommandType.stop:
+						commands.Add(new StopCmd());
 						break;
 					default:
-						break;
+						throw new Exception("Получен непредусмотренный CommandType");
 				}
 			}
+			return commands;
 		}
 	}
 }

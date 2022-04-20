@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace ConsolePostMachine
 {
@@ -6,7 +8,15 @@ namespace ConsolePostMachine
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+			var filePath = Path.Combine(desktopPath, "commands.txt");
+			List<Command> commands = CommandInterpreter.TxtToCommands(filePath);
+			int num = 1;
+			foreach (Command command in commands)
+			{
+				Console.WriteLine(num + " " + command.GetInfo());
+				num++;
+			}
 		}
 	}
 }

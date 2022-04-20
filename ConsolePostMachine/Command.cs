@@ -7,6 +7,7 @@ namespace ConsolePostMachine
 	abstract class Command
 	{
 		public abstract int ExecuteCommand(ref Machine machine);
+		public abstract string GetInfo();
 	}
 	class MoveLeftCmd : Command
 	{
@@ -19,6 +20,10 @@ namespace ConsolePostMachine
 		{
 			//machine.MoveLeft();
 			return nextLine;
+		}
+		public override string GetInfo()
+		{
+			return "Сдвиг влево и переход к " + nextLine + " строке";
 		}
 	}
 	class MoveRightCmd : Command
@@ -33,28 +38,36 @@ namespace ConsolePostMachine
 			//machine.MoveRight();
 			return nextLine;
 		}
+		public override string GetInfo()
+		{
+			return "Сдвиг вправо и переход к " + nextLine + " строке";
+		}
 	}
 	class IfElseCmd : Command
 	{
-		private int ifTrueLine;
-		private int ifFalseLine;
-		public IfElseCmd(int ifTrueLine, int ifFalseLine)
+		private int nextLineIfTrue;
+		private int nextLineIfFalse;
+		public IfElseCmd(int nextLine1, int nextLine2)
 		{
-			this.ifTrueLine = ifTrueLine;
-			this.ifFalseLine = ifFalseLine;
+			this.nextLineIfTrue = nextLine1;
+			this.nextLineIfFalse = nextLine2;
 		}
 		public override int ExecuteCommand(ref Machine machine)
 		{
 			if (true/*machine.IsPointed()*/)
-				return ifTrueLine;
+				return nextLineIfTrue;
 			else
-				return ifFalseLine;
+				return nextLineIfFalse;
+		}
+		public override string GetInfo()
+		{
+			return "Если ячейка закрашена, переход к " + nextLineIfTrue + " строке, иначе переход к " + nextLineIfFalse + " строке";
 		}
 	}
-	class PointCell : Command
+	class PointCellCmd : Command
 	{
 		private int nextLine;
-		public PointCell(int nextLine)
+		public PointCellCmd(int nextLine)
 		{
 			this.nextLine = nextLine;
 		}
@@ -63,7 +76,11 @@ namespace ConsolePostMachine
 			//machine.Point();
 			return nextLine;
 		}
-	}
+		public override string GetInfo()
+		{
+			return "Закрасить ячейку и переход к " + nextLine + " строке";
+		}
+}
 	class EraseCellCmd : Command
 	{
 		private int nextLine;
@@ -76,6 +93,10 @@ namespace ConsolePostMachine
 			//machine.Erase();
 			return nextLine;
 		}
+		public override string GetInfo()
+		{
+			return "Стереть ячейку и переход к " + nextLine + " строке";
+		}
 	}
 	class StopCmd : Command
 	{
@@ -84,6 +105,10 @@ namespace ConsolePostMachine
 		{
 			//machine.Stop(); ИЛИ ничего
 			return 0;
+		}
+		public override string GetInfo()
+		{
+			return "Остановить программу";
 		}
 	}
 }
