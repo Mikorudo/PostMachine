@@ -6,6 +6,14 @@ using System.Text;
 namespace ConsolePostMachine
 {
 	delegate void Command(int firstLine, int secondLine);
+	class FormatException : Exception
+	{
+		public FormatException(string message) : base(message) { }
+	}
+	class NumerationException : Exception
+	{
+		public NumerationException(string message) : base(message) { }
+	}
 	class CommandInterpreter
 	{
 		private List<string> commands;
