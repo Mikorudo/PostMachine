@@ -5,7 +5,6 @@ using System.Text;
 
 namespace ConsolePostMachine
 {
-	delegate void Command(int firstLine, int secondLine);
 	class FormatException : Exception
 	{
 		public FormatException(string message) : base(message) { }
@@ -14,33 +13,21 @@ namespace ConsolePostMachine
 	{
 		public NumerationException(string message) : base(message) { }
 	}
-	class CommandInterpreter
+	static class CommandInterpreter
 	{
-		private List<string> commands;
-		private int commandCount;
-		public IEnumerable<string> GetCommandText(int max)
+		
+		public static List<Command> TxtToCommands(string path)
 		{
-			for (int i = 0; i < max; i++)
-			{
-				if (i == commands.Count)
-				{
-
-				}
-			}
-		}
-		public CommandInterpreter(string path)
-		{
-			commandCount = 0;
+			List<string> textCommands = new List<string>();
 			using (StreamReader reader = new StreamReader(path))
 			{
 				string? line;
 				while ((line = reader.ReadLine()) != null)
 				{
-					commands.Add(line);
-					commandCount++;
+					textCommands.Add(line);
 				}
 			}
+			List<Command> commands = new List<Command>();
 		}
-
 	}
 }

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace ConsolePostMachine
 {
-	abstract class Commands
+	abstract class Command
 	{
 		public abstract int ExecuteCommand(ref Machine machine);
 	}
-	class MoveLeftCmd : Commands
+	class MoveLeftCmd : Command
 	{
 		private int nextLine;
 		public MoveLeftCmd(int nextLine)
@@ -21,7 +21,7 @@ namespace ConsolePostMachine
 			return nextLine;
 		}
 	}
-	class MoveRightCmd : Commands
+	class MoveRightCmd : Command
 	{
 		private int nextLine;
 		public MoveRightCmd(int nextLine)
@@ -34,7 +34,7 @@ namespace ConsolePostMachine
 			return nextLine;
 		}
 	}
-	class IfElseCmd : Commands
+	class IfElseCmd : Command
 	{
 		private int ifTrueLine;
 		private int ifFalseLine;
@@ -51,7 +51,7 @@ namespace ConsolePostMachine
 				return ifFalseLine;
 		}
 	}
-	class PointCell : Commands
+	class PointCell : Command
 	{
 		private int nextLine;
 		public PointCell(int nextLine)
@@ -64,7 +64,7 @@ namespace ConsolePostMachine
 			return nextLine;
 		}
 	}
-	class EraseCellCmd : Commands
+	class EraseCellCmd : Command
 	{
 		private int nextLine;
 		public EraseCellCmd(int nextLine)
@@ -77,7 +77,7 @@ namespace ConsolePostMachine
 			return nextLine;
 		}
 	}
-	class StopCmd : Commands
+	class StopCmd : Command
 	{
 		//Конструктор не нужен, нет переменных
 		public override int ExecuteCommand(ref Machine machine)
