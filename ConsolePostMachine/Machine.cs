@@ -6,8 +6,7 @@ namespace ConsolePostMachine
 {
 	class Tape
 	{
-		DoublyNode currentNode;
-		
+		private DoublyNode currentNode;
 		public Tape()
 		{
 			currentNode = new DoublyNode(0, false);
@@ -15,22 +14,48 @@ namespace ConsolePostMachine
 			for (int i = -1; i >= -10; i--)
 			{
 				node.leftNode = new DoublyNode(i, false);
+				node.leftNode.rightNode = node;
 				node = node.leftNode;
 			}
 			node = currentNode;
 			for (int i = 1; i <= 10; i++)
 			{
 				node.rightNode = new DoublyNode(i, false);
+				node.rightNode.leftNode = node;
 				node = node.rightNode;
 			}
 			currentNode = node;
 		}
 		public void MoveLeft()
 		{
+			if (currentNode.leftNode == null)
+            {
+				currentNode.leftNode = new DoublyNode(currentNode.index - 1, false);
+				currentNode.leftNode.rightNode = currentNode;
+            }
 			currentNode = currentNode.leftNode;
-			//Если левая пустая, то...
 		}
-		public <int, bool>
+		public void MoveRight()
+		{
+			if (currentNode.rightNode == null)
+            {
+				currentNode.rightNode = new DoublyNode(currentNode.index + 1, false);
+				currentNode.rightNode.leftNode = currentNode;
+            }
+			currentNode = currentNode.rightNode;
+		}
+		public bool IsPointed()
+        {
+			return currentNode.value;
+        }
+		public void Point()
+        {
+			currentNode.value = true;
+        }
+		public void Erase()
+		{
+			currentNode.value = false;
+		}
 	}
 	class DoublyNode
 	{
@@ -46,6 +71,7 @@ namespace ConsolePostMachine
 	}
 	class Machine
 	{
-
+		List<Command> commands;
+		public Mach
 	}
 }
