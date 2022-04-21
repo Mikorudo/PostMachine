@@ -27,6 +27,7 @@ namespace ConsolePostMachine
 				}
 			}
 			List<Command> commands = new List<Command>();
+			commands.Add(new StopCmd());
 			for (int i = 0; i < textCommands.Count; i++)
 			{
 				string[] arguments = textCommands[i].Split();

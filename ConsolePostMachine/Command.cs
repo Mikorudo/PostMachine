@@ -6,7 +6,7 @@ namespace ConsolePostMachine
 {
 	abstract class Command
 	{
-		public abstract int ExecuteCommand(ref Machine machine);
+		public abstract int ExecuteCommand(ref Tape tape);
 		public abstract string GetInfo();
 	}
 	class MoveLeftCmd : Command
@@ -16,9 +16,9 @@ namespace ConsolePostMachine
 		{
 			this.nextLine = nextLine;
 		}
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			//machine.MoveLeft();
+			tape.MoveLeft();
 			return nextLine;
 		}
 		public override string GetInfo()
@@ -33,9 +33,9 @@ namespace ConsolePostMachine
 		{
 			this.nextLine = nextLine;
 		}
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			//machine.MoveRight();
+			tape.MoveRight();
 			return nextLine;
 		}
 		public override string GetInfo()
@@ -52,9 +52,9 @@ namespace ConsolePostMachine
 			this.nextLineIfTrue = nextLine1;
 			this.nextLineIfFalse = nextLine2;
 		}
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			if (true/*machine.IsPointed()*/)
+			if (tape.IsPointed())
 				return nextLineIfTrue;
 			else
 				return nextLineIfFalse;
@@ -71,9 +71,11 @@ namespace ConsolePostMachine
 		{
 			this.nextLine = nextLine;
 		}
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			//machine.Point();
+			if (tape.IsPointed())
+				return -1;
+			tape.Point();
 			return nextLine;
 		}
 		public override string GetInfo()
@@ -88,9 +90,11 @@ namespace ConsolePostMachine
 		{
 			this.nextLine = nextLine;
 		}
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			//machine.Erase();
+			if (!tape.IsPointed())
+				return -1;
+			tape.Erase();
 			return nextLine;
 		}
 		public override string GetInfo()
@@ -100,10 +104,8 @@ namespace ConsolePostMachine
 	}
 	class StopCmd : Command
 	{
-		//Конструктор не нужен, нет переменных
-		public override int ExecuteCommand(ref Machine machine)
+		public override int ExecuteCommand(ref Tape tape)
 		{
-			//machine.Stop(); ИЛИ ничего
 			return 0;
 		}
 		public override string GetInfo()

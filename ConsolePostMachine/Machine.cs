@@ -71,7 +71,40 @@ namespace ConsolePostMachine
 	}
 	class Machine
 	{
-		List<Command> commands;
-		public Mach
+		private Tape tape;
+		private List<Command> commands;
+		public Machine()
+		{
+			commands = null;
+			tape = new Tape();
+		}
+		public void LoadCommands(List<Command> commands)
+		{
+			if (commands == null)
+				throw new NullReferenceException();
+			this.commands = commands;
+		}
+		public void ExecuteCommands()
+		{
+			int currentCommand = 1;
+			while (true)
+			{
+				currentCommand = commands[currentCommand].ExecuteCommand(ref tape);
+				if (currentCommand == 0)
+				{
+					Console.WriteLine("Финиш!");
+					break;
+				}
+				if (currentCommand == -1)
+				{
+					Console.WriteLine("Ошибка!");
+					break;
+				}
+			}
+		}
+		public void PrintTape() //Demo
+		{
+			tape.
+		}
 	}
 }
