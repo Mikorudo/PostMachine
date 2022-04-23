@@ -11,38 +11,28 @@ namespace ConsolePostMachine
 		{
 			currentNode = new DoublyNode(0, false);
 			DoublyNode node = currentNode;
-			for (int i = -1; i >= -10; i--)
-			{
-				node.leftNode = new DoublyNode(i, false);
-				node.leftNode.rightNode = node;
-				node = node.leftNode;
-			}
-			node = currentNode;
-			for (int i = 1; i <= 10; i++)
-			{
-				node.rightNode = new DoublyNode(i, false);
-				node.rightNode.leftNode = node;
-				node = node.rightNode;
-			}
-			currentNode = node;
+			//for (int i = -1; i >= -10; i--)
+			//{
+			//	node.leftNode = new DoublyNode(i, false);
+			//	node.leftNode.rightNode = node;
+			//	node = node.leftNode;
+			//}
+			//node = currentNode;
+			//for (int i = 1; i <= 10; i++)
+			//{
+			//	node.rightNode = new DoublyNode(i, false);
+			//	node.rightNode.leftNode = node;
+			//	node = node.rightNode;
+			//}
+			//currentNode = node;
 		}
 		public void MoveLeft()
 		{
-			if (currentNode.leftNode == null)
-            {
-				currentNode.leftNode = new DoublyNode(currentNode.index - 1, false);
-				currentNode.leftNode.rightNode = currentNode;
-            }
-			currentNode = currentNode.leftNode;
+			currentNode = currentNode.LeftNode;
 		}
 		public void MoveRight()
 		{
-			if (currentNode.rightNode == null)
-            {
-				currentNode.rightNode = new DoublyNode(currentNode.index + 1, false);
-				currentNode.rightNode.leftNode = currentNode;
-            }
-			currentNode = currentNode.rightNode;
+			currentNode = currentNode.RightNode;
 		}
 		public bool IsPointed()
         {
@@ -56,13 +46,62 @@ namespace ConsolePostMachine
 		{
 			currentNode.value = false;
 		}
+		public (int, bool)[] GetCellsAroundCurrent() //Demo
+		{
+			(int, bool)[] tapeElements = new (int, bool)[11];
+			DoublyNode node = currentNode;
+			for (int i = 5; i >= 0; i--)
+			{
+				tapeElements[i] = (node.index, node.value);
+				node = node.LeftNode;
+			}
+			node = currentNode.RightNode;
+			for (int i = 6; i < 11; i++)
+			{
+				tapeElements[i] = (node.index, node.value);
+				node = node.RightNode;
+			}
+			return tapeElements;
+		}
 	}
 	class DoublyNode
 	{
 		public int index;
 		public bool value;
-		public DoublyNode leftNode;
-		public DoublyNode rightNode;
+		public DoublyNode LeftNode
+		{
+			get
+			{
+				if (leftNode == null)
+				{
+					leftNode = new DoublyNode(index - 1, false);
+					leftNode.rightNode = this;
+				}
+				return leftNode;
+			}
+			set
+			{
+				leftNode = value;
+			}
+		}
+		public DoublyNode RightNode
+		{
+			get
+			{
+				if (rightNode == null)
+				{
+					rightNode = new DoublyNode(index + 1, false);
+					rightNode.leftNode = this;
+				}
+				return rightNode;
+			}
+			set
+			{
+				leftNode = value;
+			}
+		}
+		private DoublyNode leftNode;
+		private DoublyNode rightNode;
 		public DoublyNode(int _index, bool _value)
 		{
 			index = _index;
@@ -84,12 +123,15 @@ namespace ConsolePostMachine
 				throw new NullReferenceException();
 			this.commands = commands;
 		}
-		public void ExecuteCommands()
+		public void ConsoleExecuteCommands()
 		{
 			int currentCommand = 1;
+			ConsolePrintTape();
 			while (true)
 			{
+				Console.WriteLine("Строка #" + currentCommand + ": " + commands[currentCommand].GetInfo());
 				currentCommand = commands[currentCommand].ExecuteCommand(ref tape);
+				ConsolePrintTape();
 				if (currentCommand == 0)
 				{
 					Console.WriteLine("Финиш!");
@@ -102,9 +144,30 @@ namespace ConsolePostMachine
 				}
 			}
 		}
-		public void PrintTape() //Demo
+		public void ConsolePrintTape()
 		{
-			tape.
+			(int, bool)[] array = tape.GetCellsAroundCurrent();
+			for (int i = 0; i < 5; i++)
+			{
+				Console.Write("{0, 4}", array[i].Item1);
+			}
+			Console.Write(" |{0, -4}| ", array[5].Item1);
+			for (int i = 6; i < 11; i++)
+			{
+				Console.Write("{0, -4}", array[i].Item1);
+			}
+			Console.WriteLine();
+			for (int i = 0; i < 5; i++)
+			{
+				Console.Write("{0, 4}", array[i].Item2 ? 1 : 0);
+			}
+			Console.Write(" |{0, -4}| ", array[5].Item2 ? 1 : 0);
+			for (int i = 6; i < 11; i++)
+			{
+				Console.Write("{0, -4}", array[i].Item2 ? 1 : 0);
+			}
+			Console.WriteLine();
+			Console.WriteLine();
 		}
 	}
 }
