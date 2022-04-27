@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PostMachineLib
+namespace AbstractPostMachine
 {
     public class Tape
     {
@@ -10,7 +10,6 @@ namespace PostMachineLib
         public Tape()
         {
             currentNode = new DoublyNode(0, false);
-            DoublyNode node = currentNode;
         }
         public void MoveLeft()
         {
@@ -94,7 +93,7 @@ namespace PostMachineLib
             value = _value;
         }
     }
-    public class Machine
+    public abstract class Machine
     {
         protected Tape tape;
         protected List<Command> commands;
@@ -103,15 +102,21 @@ namespace PostMachineLib
             commands = null;
             tape = new Tape();
         }
-        public void LoadCommands(List<Command> commands)
+        public virtual void LoadCommands(List<Command> commands)
         {
             if (commands == null)
                 throw new NullReferenceException();
             this.commands = commands;
         }
-        public void LoadCommands(string path)
+        public virtual void LoadCommands(string path)
         {
             LoadCommands(CommandInterpreter.TxtToCommands(path));
+        }
+        public virtual void LoadTape(Tape tape)
+        {
+            if (tape == null)
+                throw new NullReferenceException();
+            this.tape = tape;
         }
         public virtual void ExecuteCommands()
         {

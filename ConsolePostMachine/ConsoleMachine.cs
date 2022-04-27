@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using PostMachineLib;
+using AbstractPostMachine;
 
 namespace ConsolePostMachine
 {
@@ -10,6 +10,7 @@ namespace ConsolePostMachine
         public override void ExecuteCommands()
         {
             int currentCommand = 1;
+            Console.WriteLine("Машина Поста начала выполнение команд");
             PrintTape();
             while (true)
             {
@@ -18,12 +19,12 @@ namespace ConsolePostMachine
                 PrintTape();
                 if (currentCommand == 0)
                 {
-                    Console.WriteLine("Финиш!");
+                    Console.WriteLine("Машина Поста закончила выполнение команд успешно");
                     break;
                 }
                 if (currentCommand == -1)
                 {
-                    Console.WriteLine("Ошибка!");
+                    Console.WriteLine("Достигнута невыполнимая команда");
                     break;
                 }
             }

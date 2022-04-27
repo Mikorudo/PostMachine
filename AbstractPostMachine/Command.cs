@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PostMachineLib
+namespace AbstractPostMachine
 {
     public abstract class Command
     {

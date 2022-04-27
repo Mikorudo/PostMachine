@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AbstractMachine\PostMachineLib.csproj" />
+    <ProjectReference Include="..\AbstractPostMachine\AbstractPostMachine.csproj" />
   </ItemGroup>
 
 </Project>

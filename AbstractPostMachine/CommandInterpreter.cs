@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PostMachineLib
+namespace AbstractPostMachine
 {
     public static class CommandInterpreter
     {
