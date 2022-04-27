@@ -5,7 +5,7 @@ using PostMachineLib;
 
 namespace ConsolePostMachine
 {
-    internal class ConsoleMachine : Machine
+    internal sealed class ConsoleMachine : Machine
     {
         public override void ExecuteCommands()
         {

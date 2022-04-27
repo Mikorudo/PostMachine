@@ -109,6 +109,10 @@ namespace PostMachineLib
                 throw new NullReferenceException();
             this.commands = commands;
         }
+        public void LoadCommands(string path)
+        {
+            LoadCommands(CommandInterpreter.TxtToCommands(path));
+        }
         public virtual void ExecuteCommands()
         {
             int currentCommand = 1;

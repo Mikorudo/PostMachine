@@ -11,9 +11,8 @@ namespace ConsolePostMachine
 		{
 			var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 			var filePath = Path.Combine(desktopPath, "commands.txt");
-			List<Command> commands = CommandInterpreter.TxtToCommands(filePath);
 			ConsoleMachine machine = new ConsoleMachine();
-			machine.LoadCommands(commands);
+			machine.LoadCommands(filePath);
 			machine.ExecuteCommands();
 		}
 	}
