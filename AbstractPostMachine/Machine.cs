@@ -19,40 +19,42 @@ namespace AbstractPostMachine
         {
             currentNode = currentNode.RightNode;
         }
-        public bool IsPointed()
+        public bool IsMarked()
         {
-            return currentNode.value;
+            return currentNode.mark;
         }
-        public void Point()
+        public void Mark()
         {
-            currentNode.value = true;
+            currentNode.mark = true;
         }
-        public void Erase()
+        public void Unmark()
         {
-            currentNode.value = false;
+            currentNode.mark = false;
         }
-        public (int, bool)[] GetCellsAroundCurrent() //Demo
+        public void GetCellsAroundCurrent(out int[] indexes, out bool[] marks) //Demo
         {
-            (int, bool)[] tapeElements = new (int, bool)[11];
+            indexes = new int[11];
+            marks = new bool[11];
             DoublyNode node = currentNode;
             for (int i = 5; i >= 0; i--)
             {
-                tapeElements[i] = (node.index, node.value);
+                indexes[i] = node.index;
+                marks[i] = node.mark;
                 node = node.LeftNode;
             }
             node = currentNode.RightNode;
             for (int i = 6; i < 11; i++)
             {
-                tapeElements[i] = (node.index, node.value);
+                indexes[i] = node.index;
+                marks[i] = node.mark;
                 node = node.RightNode;
             }
-            return tapeElements;
         }
     }
     class DoublyNode
     {
         public int index;
-        public bool value;
+        public bool mark;
         public DoublyNode LeftNode
         {
             get
@@ -90,7 +92,7 @@ namespace AbstractPostMachine
         public DoublyNode(int _index, bool _value)
         {
             index = _index;
-            value = _value;
+            mark = _value;
         }
     }
     public abstract class Machine
@@ -105,7 +107,7 @@ namespace AbstractPostMachine
         public virtual void LoadCommands(List<Command> commands)
         {
             if (commands == null)
-                throw new NullReferenceException();
+                throw new ArgumentNullException();
             this.commands = commands;
         }
         public virtual void LoadCommands(string path)
@@ -115,7 +117,7 @@ namespace AbstractPostMachine
         public virtual void LoadTape(Tape tape)
         {
             if (tape == null)
-                throw new NullReferenceException();
+                throw new ArgumentNullException();
             this.tape = tape;
         }
         public virtual void ExecuteCommands()

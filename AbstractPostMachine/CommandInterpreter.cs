@@ -141,10 +141,10 @@ namespace AbstractPostMachine
                         commands.Add(new MoveRightCmd(nextLine1));
                         break;
                     case CommandType.point:
-                        commands.Add(new PointCellCmd(nextLine1));
+                        commands.Add(new MarkCellCmd(nextLine1));
                         break;
                     case CommandType.erase:
-                        commands.Add(new EraseCellCmd(nextLine1));
+                        commands.Add(new UnmarkCellCmd(nextLine1));
                         break;
                     case CommandType.ifelse:
                         commands.Add(new IfElseCmd(nextLine1, nextLine2));

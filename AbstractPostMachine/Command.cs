@@ -45,37 +45,37 @@ namespace AbstractPostMachine
     }
     public class IfElseCmd : Command
     {
-        private int nextLineIfTrue;
-        private int nextLineIfFalse;
+        private int nextLineIfMarked;
+        private int nextLineIfUnmarked;
         public IfElseCmd(int nextLine1, int nextLine2)
         {
-            nextLineIfTrue = nextLine1;
-            nextLineIfFalse = nextLine2;
+            nextLineIfMarked = nextLine1;
+            nextLineIfUnmarked = nextLine2;
         }
         public override int ExecuteCommand(ref Tape tape)
         {
-            if (tape.IsPointed())
-                return nextLineIfTrue;
+            if (tape.IsMarked())
+                return nextLineIfMarked;
             else
-                return nextLineIfFalse;
+                return nextLineIfUnmarked;
         }
         public override string GetInfo()
         {
-            return "Если ячейка закрашена, переход к " + nextLineIfTrue + " строке, иначе переход к " + nextLineIfFalse + " строке";
+            return "Если ячейка закрашена, переход к " + nextLineIfMarked + " строке, иначе переход к " + nextLineIfUnmarked + " строке";
         }
     }
-    public class PointCellCmd : Command
+    public class MarkCellCmd : Command
     {
         private int nextLine;
-        public PointCellCmd(int nextLine)
+        public MarkCellCmd(int nextLine)
         {
             this.nextLine = nextLine;
         }
         public override int ExecuteCommand(ref Tape tape)
         {
-            if (tape.IsPointed())
+            if (tape.IsMarked())
                 return -1;
-            tape.Point();
+            tape.Mark();
             return nextLine;
         }
         public override string GetInfo()
@@ -83,18 +83,18 @@ namespace AbstractPostMachine
             return "Закрасить ячейку и переход к " + nextLine + " строке";
         }
     }
-    public class EraseCellCmd : Command
+    public class UnmarkCellCmd : Command
     {
         private int nextLine;
-        public EraseCellCmd(int nextLine)
+        public UnmarkCellCmd(int nextLine)
         {
             this.nextLine = nextLine;
         }
         public override int ExecuteCommand(ref Tape tape)
         {
-            if (!tape.IsPointed())
+            if (!tape.IsMarked())
                 return -1;
-            tape.Erase();
+            tape.Unmark();
             return nextLine;
         }
         public override string GetInfo()

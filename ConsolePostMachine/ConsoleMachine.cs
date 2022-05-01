@@ -31,25 +31,27 @@ namespace ConsolePostMachine
         }
         public void PrintTape()
         {
-            (int, bool)[] array = tape.GetCellsAroundCurrent();
+            int[] indexes;
+            bool[] marks;
+            tape.GetCellsAroundCurrent(out indexes, out marks);
             for (int i = 0; i < 5; i++)
             {
-                Console.Write("{0, 4}", array[i].Item1);
+                Console.Write("{0, 4}", indexes[i]);
             }
-            Console.Write(" |{0, -4}| ", array[5].Item1);
+            Console.Write(" |{0, -4}| ", indexes[5]);
             for (int i = 6; i < 11; i++)
             {
-                Console.Write("{0, -4}", array[i].Item1);
+                Console.Write("{0, -4}", indexes[i]);
             }
             Console.WriteLine();
             for (int i = 0; i < 5; i++)
             {
-                Console.Write("{0, 4}", array[i].Item2 ? 1 : 0);
+                Console.Write("{0, 4}", marks[i] ? 1 : 0);
             }
-            Console.Write(" |{0, -4}| ", array[5].Item2 ? 1 : 0);
+            Console.Write(" |{0, -4}| ", marks[5] ? 1 : 0);
             for (int i = 6; i < 11; i++)
             {
-                Console.Write("{0, -4}", array[i].Item2 ? 1 : 0);
+                Console.Write("{0, -4}", marks[i] ? 1 : 0);
             }
             Console.WriteLine();
             Console.WriteLine();
