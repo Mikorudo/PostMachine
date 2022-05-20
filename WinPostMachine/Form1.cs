@@ -13,63 +13,67 @@ namespace WinPostMachine
 {
     public partial class Form1 : Form
     {
-        private PictureBox[] pictureBoxes;
-        private Label[] labels;
+        private PictureBox[] _pictureBoxes;
+        private Label[] _labels;
+        private WinMachine _winMachine;
+        private VisualTape _visualTape;
         public Form1()
         {
             InitializeComponent();
             InitializeCells();
             ResizeCells();
+            _visualTape = new VisualTape(imageList1, _pictureBoxes, _labels);
+            _winMachine = new WinMachine(_visualTape);
         }
         private void InitializeCells()
         {
-            pictureBoxes = new PictureBox[11];
-            labels = new Label[11];
+            _pictureBoxes = new PictureBox[11];
+            _labels = new Label[11];
             #region FillArray
-            pictureBoxes[0] = pictureBox1;
-            pictureBoxes[1] = pictureBox2;
-            pictureBoxes[2] = pictureBox3;
-            pictureBoxes[3] = pictureBox4;
-            pictureBoxes[4] = pictureBox5;
-            pictureBoxes[5] = pictureBox6;
-            pictureBoxes[6] = pictureBox7;
-            pictureBoxes[7] = pictureBox8;
-            pictureBoxes[8] = pictureBox9;
-            pictureBoxes[9] = pictureBox10;
-            pictureBoxes[10] = pictureBox11;
-            labels[0] = label1;
-            labels[1] = label2;
-            labels[2] = label3;
-            labels[3] = label4;
-            labels[4] = label5;
-            labels[5] = label6;
-            labels[6] = label7;
-            labels[7] = label8;
-            labels[8] = label9;
-            labels[9] = label10;
-            labels[10] = label11;
+            _pictureBoxes[0] = pictureBox1;
+            _pictureBoxes[1] = pictureBox2;
+            _pictureBoxes[2] = pictureBox3;
+            _pictureBoxes[3] = pictureBox4;
+            _pictureBoxes[4] = pictureBox5;
+            _pictureBoxes[5] = pictureBox6;
+            _pictureBoxes[6] = pictureBox7;
+            _pictureBoxes[7] = pictureBox8;
+            _pictureBoxes[8] = pictureBox9;
+            _pictureBoxes[9] = pictureBox10;
+            _pictureBoxes[10] = pictureBox11;
+            _labels[0] = label1;
+            _labels[1] = label2;
+            _labels[2] = label3;
+            _labels[3] = label4;
+            _labels[4] = label5;
+            _labels[5] = label6;
+            _labels[6] = label7;
+            _labels[7] = label8;
+            _labels[8] = label9;
+            _labels[9] = label10;
+            _labels[10] = label11;
             #endregion
-                for (int i = 0; i < 11; i++)
-                {
-                    labels[i].Text = (i - 5).ToString();
-                    pictureBoxes[i].Image = imageList1.Images[0];
-                }
+            for (int i = 0; i < 11; i++)
+            {
+                _labels[i].Text = (i - 5).ToString();
+                _pictureBoxes[i].Image = imageList1.Images[0];
+            }
         }
         private void ResizeCells()
         {
-            int width = (panel1.Size.Width - 8 * 2 - 2 * 5) / 11;
+            int width = (panel1.Size.Width - 8 * 2 - 2 * 5 - 4) / 11;
             Point point = new Point(0, 0);
             for (int i = 0; i < 11; i++)
             {
-                labels[i].Width = width;
-                labels[i].Height = 20;
-                labels[i].TextAlign = ContentAlignment.MiddleCenter;
-                pictureBoxes[i].Width = width;
-                pictureBoxes[i].Height = width;
+                _labels[i].Width = width;
+                _labels[i].Height = 20;
+                _labels[i].TextAlign = ContentAlignment.MiddleCenter;
+                _pictureBoxes[i].Width = width;
+                _pictureBoxes[i].Height = width;
 
-                labels[i].Location = point;
+                _labels[i].Location = point;
                 point.Y += label1.Height;
-                pictureBoxes[i].Location = point;
+                _pictureBoxes[i].Location = point;
                 point.Y -= label1.Height;
 
                 point.X += width;
@@ -77,15 +81,48 @@ namespace WinPostMachine
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Start(object sender, EventArgs e)
         {
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            var filePath = Path.Combine(desktopPath, "commands.txt");
-            VisualTape visualTape = new VisualTape(imageList1, pictureBoxes, labels);
-            WinMachine winMachine = new WinMachine(visualTape);
-            winMachine.LoadCommands(filePath);
-            winMachine.ExecuteCommandsAsync();
-            button1.Enabled = false;
+            try
+            {
+                _winMachine.ExecuteCommands();
+                button1.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void LoadCommands(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = openFileDialog1.FileName;
+                _winMachine.LoadCommands(fileName);
+            }
+        }
+
+
+        private void ChangeDelayTime(object sender, EventArgs e)
+        {
+            ToolStripMenuItem toolStripMenuItem = menuStrip1.Items[1] as ToolStripMenuItem;
+            toolStripMenuItem = toolStripMenuItem.DropDownItems[0] as ToolStripMenuItem;
+
+            foreach (ToolStripMenuItem item in toolStripMenuItem.DropDownItems)
+            {
+                if (item == sender)
+                {
+                    item.Checked = true;
+                }
+                else
+                    item.Checked = false;
+            }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

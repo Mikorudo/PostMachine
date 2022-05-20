@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using AbstractPostMachine;
 using System.Threading.Tasks;
@@ -31,16 +28,30 @@ namespace WinPostMachine
             }
         }
     }
-   internal class WinMachine : Machine
-   {
+    internal class WinMachine : Machine
+    {
         private VisualTape visualTape;
+        public int DelayTime
+        {
+            get
+            {
+                return delayTime;
+            }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("Delay time cannot be less than 0: " + value);
+                delayTime = value;
+            }
+        }
+        private int delayTime;
         public WinMachine(VisualTape visualTape)
         {
             if (visualTape == null)
                 throw new ArgumentNullException();
             this.visualTape = visualTape;
         }
-        public async void ExecuteCommandsAsync()
+        public override async void ExecuteCommands()
         {
             int currentCommand = 1;
             while (true)
@@ -62,31 +73,6 @@ namespace WinPostMachine
                     break;
                 }
                 await Task.Delay(1000);
-            }
-        }
-        public override void ExecuteCommands()
-        {
-            int currentCommand = 1;
-            while (true)
-            {
-                //Thread.Sleep(1000);
-                bool isCmdIfElse = commands[currentCommand].GetType() == typeof(IfElseCmd);
-                currentCommand = commands[currentCommand].ExecuteCommand(ref tape);
-                int[] indexes;
-                bool[] marks;
-                tape.GetCellsAroundCurrent(out indexes, out marks);
-                visualTape.UpdateTape(indexes, marks, isCmdIfElse);
-                //Thread.Sleep(1000);
-                if (currentCommand == 0)
-                {
-                    MessageBox.Show("Алгоритм успешно завершил свою работу");
-                    break;
-                }
-                if (currentCommand == -1)
-                {
-                    MessageBox.Show("Выполнение недостижимого кода");
-                    break;
-                }
             }
         }
    }
