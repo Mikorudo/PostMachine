@@ -11,8 +11,8 @@ namespace AbstractPostMachine
         {
             left,
             right,
-            point,
-            erase,
+            mark,
+            unmark,
             ifelse,
             stop
         }
@@ -24,6 +24,8 @@ namespace AbstractPostMachine
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    if (line.StartsWith("*"))
+                        continue;
                     textCommands.Add(line);
                 }
             }
@@ -47,10 +49,10 @@ namespace AbstractPostMachine
                         commandType = CommandType.left;
                         break;
                     case "1":
-                        commandType = CommandType.point;
+                        commandType = CommandType.mark;
                         break;
                     case "0":
-                        commandType = CommandType.erase;
+                        commandType = CommandType.unmark;
                         break;
                     case "?":
                         commandType = CommandType.ifelse;
@@ -66,8 +68,8 @@ namespace AbstractPostMachine
                 {
                     case CommandType.left:
                     case CommandType.right:
-                    case CommandType.point:
-                    case CommandType.erase:
+                    case CommandType.mark:
+                    case CommandType.unmark:
                         {
                             if (arguments.Length == 2)
                                 if (i == textCommands.Count - 1)
@@ -140,10 +142,10 @@ namespace AbstractPostMachine
                     case CommandType.right:
                         commands.Add(new MoveRightCmd(nextLine1));
                         break;
-                    case CommandType.point:
+                    case CommandType.mark:
                         commands.Add(new MarkCellCmd(nextLine1));
                         break;
-                    case CommandType.erase:
+                    case CommandType.unmark:
                         commands.Add(new UnmarkCellCmd(nextLine1));
                         break;
                     case CommandType.ifelse:

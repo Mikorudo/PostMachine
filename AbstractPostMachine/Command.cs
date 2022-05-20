@@ -6,7 +6,7 @@ namespace AbstractPostMachine
 {
     public abstract class Command
     {
-        public abstract int ExecuteCommand(ref Tape tape);
+        public abstract int ExecuteCommand(Tape tape);
         public abstract string GetInfo();
     }
     public class MoveLeftCmd : Command
@@ -16,7 +16,7 @@ namespace AbstractPostMachine
         {
             this.nextLine = nextLine;
         }
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             tape.MoveLeft();
             return nextLine;
@@ -33,7 +33,7 @@ namespace AbstractPostMachine
         {
             this.nextLine = nextLine;
         }
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             tape.MoveRight();
             return nextLine;
@@ -52,7 +52,7 @@ namespace AbstractPostMachine
             nextLineIfMarked = nextLine1;
             nextLineIfUnmarked = nextLine2;
         }
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             if (tape.IsMarked())
                 return nextLineIfMarked;
@@ -71,7 +71,7 @@ namespace AbstractPostMachine
         {
             this.nextLine = nextLine;
         }
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             if (tape.IsMarked())
                 return -1;
@@ -90,7 +90,7 @@ namespace AbstractPostMachine
         {
             this.nextLine = nextLine;
         }
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             if (!tape.IsMarked())
                 return -1;
@@ -104,7 +104,7 @@ namespace AbstractPostMachine
     }
     public class StopCmd : Command
     {
-        public override int ExecuteCommand(ref Tape tape)
+        public override int ExecuteCommand(Tape tape)
         {
             return 0;
         }

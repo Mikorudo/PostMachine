@@ -125,7 +125,7 @@ namespace AbstractPostMachine
             int currentCommand = 1;
             while (true)
             {
-                currentCommand = commands[currentCommand].ExecuteCommand(ref tape);
+                currentCommand = commands[currentCommand].ExecuteCommand(tape);
                 if (currentCommand == 0 || currentCommand == -1)
                     break;
             }

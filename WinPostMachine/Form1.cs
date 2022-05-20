@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using AbstractPostMachine;
+
 
 namespace WinPostMachine
 {
@@ -16,18 +11,45 @@ namespace WinPostMachine
         private PictureBox[] _pictureBoxes;
         private Label[] _labels;
         private WinMachine _winMachine;
-        private VisualTape _visualTape;
+        public void UpdateTape(Tape tape, bool isIfElseCmd)
+        {
+            int[] indexes;
+            bool[] marks;
+            tape.GetCellsAroundCurrent(out indexes, out marks);
+            for (int i = 0; i < 11; i++)
+            {
+                _labels[i].Text = indexes[i].ToString();
+                if (marks[i])
+                    _pictureBoxes[i].Image = imageList1.Images[i == 5 && isIfElseCmd ? 3 : 1];
+                else
+                    _pictureBoxes[i].Image = imageList1.Images[i == 5 && isIfElseCmd ? 2 : 0];
+            }
+
+        }
+        public void PrintToTextBox(string txt)
+        {
+            richTextBox1.Text += txt + "\n";
+        }
+        public void PrintToMessageBox(string txt)
+        {
+            MessageBox.Show(txt);
+        }
         public Form1()
         {
             InitializeComponent();
+
+            _winMachine = new WinMachine();
+            _winMachine.DelayTime = 1000;
+            _winMachine.tapeUpdate += UpdateTape;
+            _winMachine.invokedCommandInfo += PrintToTextBox;
+            _winMachine.finishAlgoritm += PrintToMessageBox;
+
             InitializeCells();
             ResizeCells();
-            _visualTape = new VisualTape(imageList1, _pictureBoxes, _labels);
-            _winMachine = new WinMachine(_visualTape);
         }
         private void InitializeCells()
         {
-            _pictureBoxes = new PictureBox[11];
+            _pictureBoxes = new PictureBox[12];
             _labels = new Label[11];
             #region FillArray
             _pictureBoxes[0] = pictureBox1;
@@ -41,6 +63,7 @@ namespace WinPostMachine
             _pictureBoxes[8] = pictureBox9;
             _pictureBoxes[9] = pictureBox10;
             _pictureBoxes[10] = pictureBox11;
+            _pictureBoxes[11] = pictureBox12; //Каретка
             _labels[0] = label1;
             _labels[1] = label2;
             _labels[2] = label3;
@@ -58,11 +81,13 @@ namespace WinPostMachine
                 _labels[i].Text = (i - 5).ToString();
                 _pictureBoxes[i].Image = imageList1.Images[0];
             }
+            _pictureBoxes[11].Image = imageList1.Images[4];
         }
+
         private void ResizeCells()
         {
             int width = (panel1.Size.Width - 8 * 2 - 2 * 5 - 4) / 11;
-            Point point = new Point(0, 0);
+            Point point = new Point(2, 0);
             for (int i = 0; i < 11; i++)
             {
                 _labels[i].Width = width;
@@ -79,6 +104,11 @@ namespace WinPostMachine
                 point.X += width;
                 point.X += (i == 4 || i == 5 ? 6 : 2);
             }
+            point = _pictureBoxes[5].Location;
+            point.X -= 3;
+            point.Y -= 3;
+            _pictureBoxes[11].Location = point;
+            _pictureBoxes[11].Size = new Size(_pictureBoxes[5].Size.Width + 6, _pictureBoxes[5].Size.Height + 6);
         }
 
         private void Start(object sender, EventArgs e)
@@ -114,15 +144,22 @@ namespace WinPostMachine
                 if (item == sender)
                 {
                     item.Checked = true;
+                    _winMachine.DelayTime = int.Parse(item.Text);
                 }
                 else
                     item.Checked = false;
             }
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
+            CommandInputForm commandInputForm = new CommandInputForm();
+            commandInputForm.Show();
+        }
 
+        private void panel1_Resize(object sender, EventArgs e)
+        {
+            ResizeCells();
         }
     }
 }
