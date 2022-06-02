@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using AbstractPostMachine;
 
 
 namespace WinPostMachine
@@ -10,8 +11,22 @@ namespace WinPostMachine
     {
         private PictureBox[] _pictureBoxes;
         private Label[] _labels;
-        private WinMachine _winMachine;
-        public void UpdateTape(Tape tape, bool isIfElseCmd)
+        private PostMachine _postMachine;
+        private PostMachine _virtualPostMachine;
+        private int Count
+        {
+            get
+            {
+                return _count;
+            }
+            set
+            {
+                _count = value;
+                commandCountLabel.Text = "Выполнено команд: " + _count;
+            }
+        }
+        private int _count;
+        private void UpdateTape(Tape tape, bool isIfElseCmd)
         {
             int[] indexes;
             bool[] marks;
@@ -24,28 +39,35 @@ namespace WinPostMachine
                 else
                     _pictureBoxes[i].Image = imageList1.Images[i == 5 && isIfElseCmd ? 2 : 0];
             }
-
         }
         public void PrintToTextBox(string txt)
         {
             richTextBox1.Text += txt + "\n";
+            Count++;
         }
         public void PrintToMessageBox(string txt)
         {
             MessageBox.Show(txt);
+            startButton.Enabled = true;
         }
         public Form1()
         {
             InitializeComponent();
+            this.KeyPreview = true;
+            CheckForIllegalCrossThreadCalls = false;
 
-            _winMachine = new WinMachine();
-            _winMachine.DelayTime = 1000;
-            _winMachine.tapeUpdate += UpdateTape;
-            _winMachine.invokedCommandInfo += PrintToTextBox;
-            _winMachine.finishAlgoritm += PrintToMessageBox;
+            _postMachine = new PostMachine();
+            _postMachine.Delay = 1000;
+            _postMachine.updateTape += UpdateTape;
+            _postMachine.commandMessage += PrintToTextBox;
+            _postMachine.workEnd += PrintToMessageBox;
+
+            _virtualPostMachine = new PostMachine();
+            _virtualPostMachine.Delay = 1;
+            Count = 0;
 
             InitializeCells();
-            ResizeCells();
+            ResizeCells(null, null);
         }
         private void InitializeCells()
         {
@@ -84,7 +106,7 @@ namespace WinPostMachine
             _pictureBoxes[11].Image = imageList1.Images[4];
         }
 
-        private void ResizeCells()
+        private void ResizeCells(object sender, EventArgs e)
         {
             int width = (panel1.Size.Width - 8 * 2 - 2 * 5 - 4) / 11;
             Point point = new Point(2, 0);
@@ -115,21 +137,42 @@ namespace WinPostMachine
         {
             try
             {
-                _winMachine.ExecuteCommands();
-                button1.Enabled = false;
+                startButton.Enabled = false;
+                Reset(null, null);
+                _postMachine.ExecuteCommands();
+                _virtualPostMachine.Reset();
+                new Thread(CheckEndlessAlgoritm).Start();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-
-        private void LoadCommands(object sender, EventArgs e)
+        private void Stop(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            _postMachine.StopExecutingCommands();
+            startButton.Enabled = true;
+        }
+        public void LoadCommands(string text)
+        {
+            _postMachine.LoadCommands(CommandInterpreter.TextToCommands(text));
+            _virtualPostMachine.LoadCommands(CommandInterpreter.TextToCommands(text));
+        }
+        private void LoadCommandsDialog(object sender, EventArgs e)
+        {
+            try
             {
-                string fileName = openFileDialog1.FileName;
-                _winMachine.LoadCommands(fileName);
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = openFileDialog1.FileName;
+                    _postMachine.LoadCommands(fileName);
+                    _virtualPostMachine.LoadCommands(fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -144,22 +187,49 @@ namespace WinPostMachine
                 if (item == sender)
                 {
                     item.Checked = true;
-                    _winMachine.DelayTime = int.Parse(item.Text);
+                    _postMachine.Delay = int.Parse(item.Text);
                 }
                 else
                     item.Checked = false;
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void CreateCommands(object sender, EventArgs e)
         {
-            CommandInputForm commandInputForm = new CommandInputForm();
+            CommandInputForm commandInputForm = new CommandInputForm(this);
             commandInputForm.Show();
         }
 
-        private void panel1_Resize(object sender, EventArgs e)
+        private void Reset(object sender, EventArgs e)
         {
-            ResizeCells();
+            Stop(null, null);
+            _postMachine.Reset();
+            richTextBox1.Text = "";
+            Count = 0;
+            InitializeCells();
         }
+        private void CheckEndlessAlgoritm()
+        {
+            _virtualPostMachine.ExecuteCommands();
+            Thread.Sleep(3000);
+            if (_virtualPostMachine.Condition)
+            {
+                _virtualPostMachine.StopExecutingCommands();
+                MessageBox.Show("Возможно алгоритм зацикленный, рекомендуем приостановить процесс", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            richTextBox1.ScrollToCaret();
+        }
+
+        private void ShowHelp(object sender, EventArgs e)
+        {
+            string path = "PostMachine.chm";
+            Help.ShowHelp(this, Application.StartupPath + path);
+        }
+
     }
 }
